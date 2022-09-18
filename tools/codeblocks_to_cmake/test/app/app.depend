@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1663494830 source:/home/lull/src/cb/test/app/main.cpp
+	<iostream>
+	<version_debug.h>
+	<version_release.h>
+	<3rd.h>
+
+1663493482 /home/lull/src/cb/test/app/version_debug.h
+
+1663493509 /home/lull/src/cb/test/app/version_release.h
+
+1663494760 /home/lull/src/cb/test/3rd/3rd.h
+

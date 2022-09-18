@@ -47,7 +47,7 @@ enum E_Build_Type
     NATIVE,
     numOfBuild_Type
 };
-[[maybe_unused]] enum E_PCH_Mode
+ enum [[maybe_unused]] E_PCH_Mode
 {
 };
 struct Compiler_Option
@@ -59,6 +59,7 @@ struct Linker_Option
 {
     vector<string> library;
     vector<string> directorys;
+    vector<string> options;
 };
 struct Configuration_Target
 {
@@ -84,7 +85,7 @@ struct Build_Set
 {
     vector<Configuration_Target> configuration_targets;
 };
-[[maybe_unused]] struct Extensions
+struct [[maybe_unused]]  Extensions
 {
 };
 struct Project
@@ -198,6 +199,12 @@ auto parse_Linker_Option(xml_node node, codeblocks::Context &cx)
         string lib = child.attribute("library").as_string();
         if (std::find(ret.library.begin(), ret.library.end(), lib) == ret.library.end())
             ret.library.push_back(lib);
+    });
+
+    for_each_child_who_have_attr(node, "option", [&](xml_node &child) {
+        string lib = child.attribute("option").as_string();
+        if (std::find(ret.options.begin(), ret.options.end(), lib) == ret.options.end())
+            ret.options.push_back(lib);
     });
 
     for_each_child_who_have_attr(node, "directory", [&](xml_node &child) {
