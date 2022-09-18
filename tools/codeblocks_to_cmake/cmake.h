@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include <pugixml.hpp>
 using std::set;
 using std::string;
 using std::vector;
