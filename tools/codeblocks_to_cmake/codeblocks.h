@@ -6,6 +6,7 @@
 #include <pugixml.hpp>
 #include <string>
 #include <vector>
+#include <tuple>
 using fmt::format;
 using pugi::xml_attribute;
 using pugi::xml_node;
@@ -13,13 +14,7 @@ using std::function;
 using std::string;
 using std::vector;
 namespace fs = std::filesystem;
-// log
-#include <iostream>
-inline auto log(std::string const &s)
-{
-    std::cout << s << std::endl;
-}
-#define LOG(msg) log(format("-- {}; {}:{}", msg, __FILE__, __LINE__))
+#include <log.h>
 struct scope_modify_Current_Path
 {
     std::string old_path;
@@ -88,6 +83,8 @@ struct Build_Set
 struct [[maybe_unused]]  Extensions
 {
 };
+
+// path in this are all absolute-path
 struct Project
 {
     string title;
@@ -99,6 +96,9 @@ struct Project
     Compiler_Option compiler_option;
     Linker_Option linker_Option;
     vector<Unit> units;
+
+    // trace cbp sourcefile
+    string cbp_source_path; 
 };
 struct Context
 {
@@ -241,7 +241,16 @@ auto parse_Configuration_Target(xml_node &node, codeblocks::Context &cx)
 auto parse_Unit(xml_node &node, codeblocks::Context &cx)
 {
     codeblocks::Unit ret;
-    ret.file_name = node.attribute("filename").as_string();
+    std::error_code ec;
+    string relative_unit_file=node.attribute("filename").as_string();
+    {
+        scope_modify_Current_Path modi=cx.cbp_path;
+        ret.file_name = fs::canonical(relative_unit_file,ec).string();
+    }
+    if(ec){
+        LOG(format("unit file [{}] based on [{}] is unreachable",relative_unit_file,cx.cbp_path));
+        LOG(ec.message());
+    }
     for_each_child_who_have_attr(node, "target", [&](xml_node &child) {
         auto targetName = child.attribute("target").as_string();
         if (std::find(ret.bundled_targets.begin(), ret.bundled_targets.end(), targetName) == ret.bundled_targets.end())
@@ -278,11 +287,12 @@ auto parse_Project(xml_node &node, codeblocks::Context &cx)
     ret.compiler_option = parse_Compiler_Option(node.child("Compiler"), cx);
     ret.linker_Option   = parse_Linker_Option(node.child("Linker"), cx);
     for_each_child_who_have_attr(node, "filename", [&](xml_node &unit) { ret.units.push_back(parse_Unit(unit, cx)); });
+    ret.cbp_source_path=cx.cbp_path;
     return ret;
 }
 } // namespace Parser
 
-inline codeblocks::Project ParseCodeBlocksProject(string cbp_file_path)
+inline std::tuple< codeblocks::Project,codeblocks::Context> ParseCodeBlocksProject(string cbp_file_path)
 {
     pugi::xml_document cbp;
     if (auto load_result = cbp.load_file(cbp_file_path.c_str()); !load_result)
@@ -290,8 +300,8 @@ inline codeblocks::Project ParseCodeBlocksProject(string cbp_file_path)
     auto node_proj = cbp.child("CodeBlocks_project_file").child("Project");
 
     codeblocks::Context cx;
-    cx.cbp_path = fs::absolute(cbp_file_path).parent_path();
+    cx.cbp_path = fs::canonical(cbp_file_path).parent_path();
 
     codeblocks::Project ret = Parser::parse_Project(node_proj, cx);
-    return ret;
+    return {ret,cx};
 }

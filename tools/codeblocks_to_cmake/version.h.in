@@ -1,0 +1,11 @@
+#pragma once
+
+/* follow macro is set by cmake::project(**) and cmake::config_file  */
+#define project_name                      "${PROJECT_NAME}"
+#define project_VERSION_MAJOR ${${PROJECT_NAME}_VERSION_MAJOR}
+#define project_VERSION_MINOR ${${PROJECT_NAME}_VERSION_MINOR}
+#define project_VERSION_PATCH ${${PROJECT_NAME}_VERSION_PATCH}
+#define project_VERSION_TWEAK ${${PROJECT_NAME}_VERSION_TWEAK}
+#define project_VERSION       ${${PROJECT_NAME}_VERSION}
+#define project_DESCRIPTION "${${PROJECT_NAME}_DESCRIPTION}"
+  

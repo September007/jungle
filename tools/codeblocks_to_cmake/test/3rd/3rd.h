@@ -1,2 +1,2 @@
-extern char *str_3rd;
-extern char *str_3rd_c;
+extern const char *str_3rd;
+extern const char *str_3rd_c;
