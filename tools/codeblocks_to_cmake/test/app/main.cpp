@@ -12,6 +12,6 @@ int main()
 {
     cout << "Hello world in " <<__version<< endl;
     cout << str_3rd<<endl;
-    cout << str_3rd_cs<<endl;
+    cout << str_3rd_c<<endl;
     return 0;
 }
