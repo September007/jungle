@@ -4,7 +4,14 @@ int main(int argc, char **argv)
 {
     vector<string> ps;
     string outputPath="./deps.log";
-    
+    if(argc==1){
+        std::cout<<format(R"(
+        input: codeblocks workspace file
+        output: depencies of targets in mermaid-graph
+        
+        )")<<std::endl;
+        return 0;
+    }
     {
         // input is workspace
         for(int i=1;i<argc;++i)try{
