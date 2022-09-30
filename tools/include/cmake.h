@@ -167,10 +167,10 @@ project({}
                     part = format("add_library({} STATIC)\n", tar.get_tarName());
                     break;
                 case cmake::PROPERTY::Target::E_Target_Type::DYNAMIC_APP:
-                    part = format("add_library(lib SHARED)\n", tar.get_tarName());
+                    part = format("add_library({} SHARED)\n", tar.get_tarName());
                     break;
                 case cmake::PROPERTY::Target::E_Target_Type::MODULE:
-                    part = format("add_library(lib MODULE)\n", tar.get_tarName());
+                    part = format("add_library({}} MODULE)\n", tar.get_tarName());
                     break;
                 case cmake::PROPERTY::Target::E_Target_Type::GUI_APP:
                 case cmake::PROPERTY::Target::E_Target_Type::CONSOLE_APP:

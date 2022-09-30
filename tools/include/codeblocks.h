@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 #include <tuple>
+
+#include <fstream>
+#include <sstream>
 using fmt::format;
 using pugi::xml_attribute;
 using pugi::xml_node;
@@ -296,7 +299,15 @@ inline std::tuple< codeblocks::Project,codeblocks::Context> ParseCodeBlocksProje
 {
     pugi::xml_document cbp;
     if (auto load_result = cbp.load_file(cbp_file_path.c_str()); !load_result)
-        return {};
+        {
+            // std::ifstream in(cbp_file_path);
+            // std::stringstream oo;
+            // oo<<in.rdbuf();
+            // auto s=oo.str();
+            // auto p = cbp.load_string(s.c_str());
+            // if(!p)
+                return {};
+        }
     auto node_proj = cbp.child("CodeBlocks_project_file").child("Project");
 
     codeblocks::Context cx;
