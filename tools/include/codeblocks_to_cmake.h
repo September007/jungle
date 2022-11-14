@@ -60,7 +60,11 @@ choose_out:
     // 2. parse cb.output_name(maybe absolute path) to cm.OUTPUT_NAME
     // and cm.RUNTIME_OUTPUT_DIRECTORY (relative path on cmCtx.cmake_current_dir!)
     ret.OUTPUT_NAME = fs::path(ct.output_name).filename();
-    ret.RUNTIME_OUTPUT_DIRECTORY = fs::proximate(fs::path(ct.output_name).parent_path(), targetCmakeCx.cmake_current_dir);
+    {
+        scope_modify_Current_Path __(proj.cbp_source_path);
+        auto abs_output_dir=fs::absolute(fs::path(ct.output_name).parent_path());
+        ret.RUNTIME_OUTPUT_DIRECTORY= fs::proximate(abs_output_dir,targetCmakeCx.cmake_current_dir);
+    }
 
     // 3. compiling attributes: SOURCES INCLUDE_DIRECTORIES COMPILE_OPTIONS COMPILE_DEFINITIONS
     // note: inlcude_dirs and options and definition are all added in order of {target,project}

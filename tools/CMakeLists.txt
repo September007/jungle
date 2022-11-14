@@ -1,3 +1,4 @@
 
 add_subdirectory(codeblocks_to_cmake)
 add_subdirectory(codeblocks_proj_deps)
+add_subdirectory(cbp_ws_strip_cbp)

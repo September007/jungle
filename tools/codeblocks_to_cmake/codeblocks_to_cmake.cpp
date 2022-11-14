@@ -5,6 +5,7 @@ using namespace std;
 
 int main(int argc,const char **argv)
 {
+    system("pwd");
     cout<<format("argc: {}",argc)<<endl;
     pugi::xml_document cbp;
     const char*default_argv[]={argv[0]
@@ -16,9 +17,13 @@ int main(int argc,const char **argv)
             argc=l;
             argv=default_argv;
         }
+    auto cwd=fs::current_path();
     for (int i = 1; i < argc; ++i)
     try{
+        scope_modify_Current_Path __(cwd);
         std::string cbp_file = argv[i];
+        // 转换cbp_file 到绝对路径可以避免以后的某些转换错误
+        cbp_file = fs::absolute(cbp_file).string();
         string target_cmake_dir = fs::path(cbp_file).parent_path().string();
         
         pugi::xml_parse_result result = cbp.load_file(cbp_file.c_str());
