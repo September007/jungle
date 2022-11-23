@@ -13,5 +13,4 @@ int main(){
 
 	cout << endl;
 	return 0;
-	__func__
 }

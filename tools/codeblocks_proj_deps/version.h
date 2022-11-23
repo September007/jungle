@@ -7,6 +7,6 @@
 #define project_VERSION_PATCH 
 #define project_VERSION_TWEAK 
 #define project_VERSION       1.1
-#define CMAKE_CURRENT_LIST_DIR  "/home/ws/src/code/jungle/tools/codeblocks_proj_deps"
+#define CMAKE_CURRENT_LIST_DIR  "E:/CODE/jungle/tools/codeblocks_proj_deps"
 #define project_DESCRIPTION "analyze dependencies"
   

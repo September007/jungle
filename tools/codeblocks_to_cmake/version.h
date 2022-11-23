@@ -7,6 +7,6 @@
 #define project_VERSION_PATCH 
 #define project_VERSION_TWEAK 
 #define project_VERSION       1.1
-#define CMAKE_CURRENT_LIST_DIR  "/home/ws/src/code/jungle/tools/codeblocks_to_cmake"
+#define CMAKE_CURRENT_LIST_DIR  "E:/CODE/jungle/tools/codeblocks_to_cmake"
 #define project_DESCRIPTION "trans .cbp file to CMakeLists"
   
