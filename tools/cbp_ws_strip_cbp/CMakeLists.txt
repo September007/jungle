@@ -3,7 +3,7 @@ project(cbp_ws_strip_cbp
             VERSION 1.1 
             DESCRIPTION "analyze dependencies")
 
-add_executable(cbp_ws_strip_cbp)
+add_executable(cbp_ws_strip_cbp cbp_ws_strip_cbp.cpp)
 
 # set_property(TARGET codeblocks_to_cmake PROPERTY  INCLUDE_DIRECTORIES .)
 target_link_libraries(cbp_ws_strip_cbp PRIVATE pugixml::pugixml)

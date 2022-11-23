@@ -3,3 +3,4 @@
 /.vscode
 /temp
 temp
+**/version.h

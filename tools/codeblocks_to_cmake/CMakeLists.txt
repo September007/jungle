@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.2)
 
 project(codeblocks_to_cmake
     LANGUAGES CXX C
     VERSION 1.1
     DESCRIPTION "trans .cbp file to CMakeLists")
 
-add_executable(codeblocks_to_cmake)
+add_executable(codeblocks_to_cmake codeblocks_to_cmake.cpp)
 
 # set_property(TARGET codeblocks_to_cmake PROPERTY  INCLUDE_DIRECTORIES .)
 target_link_libraries(codeblocks_to_cmake PRIVATE pugixml::pugixml)
