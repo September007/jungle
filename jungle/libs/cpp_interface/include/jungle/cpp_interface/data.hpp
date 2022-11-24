@@ -4,10 +4,10 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple> // for static_assert pack template params
+#include <type_traits>
 #include <variant>
 #include <vector>
-#include <type_traits>
-#include <tuple> // for static_assert pack template params
 namespace cpp_interface {
 namespace Data {
 
@@ -58,23 +58,21 @@ struct DataItem : public _DataItem_Variant {
   DataItem(InvalidType d) : variant(d), type(Data_Type::Invalid) {}
   DataItem(std::shared_ptr<Table> d) : variant(d), type(Data_Type::Table_) {}
   // more constructor for string and table
-  template <typename... Args>
-  DataItem(Args... args){DelayConstruct(std::forward<Args>(args)...);}
+  template <typename... Args> DataItem(Args... args) {
+    DelayConstruct(std::forward<Args>(args)...);
+  }
 
   DataItem InvalidInstance() { return DataItem{InvalidType{}}; }
 
-
-  template <typename... Args>
-  void DelayConstruct(Args... args){
-    if constexpr (std::is_constructible<std::string,Args...>::value){
-      new(this) DataItem(std::string(std::forward<Args>(args)...));
-    }else if constexpr(std::is_constructible<Table,Args...>::value){
-      new(this) DataItem(std::make_shared<Table>(std::forward<Args>(args)...));
-    }else
-      static_assert(std::is_same_v<std::tuple<Args...>,std::tuple<Args...>>,"there is no suitable constructor");
+  template <typename... Args> void DelayConstruct(Args... args) {
+    if constexpr (std::is_constructible<std::string, Args...>::value) {
+      new (this) DataItem(std::string(std::forward<Args>(args)...));
+    } else if constexpr (std::is_constructible<Table, Args...>::value) {
+      new (this) DataItem(std::make_shared<Table>(std::forward<Args>(args)...));
+    } else
+      static_assert(std::is_same_v<std::tuple<Args...>, std::tuple<Args...>>,
+                    "there is no suitable constructor");
   }
-
-  
 
   Data_Type type = Data_Type::Invalid;
 };
