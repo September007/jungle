@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+package CC_Msg;
+
+message CC_Msg{
+    enum CC_MsgType{
+        Init = 0;
+        AddNode = 1;
+        Analyze = 2;
+        Connect = 3;
+        Construct = 4;
+        Convert = 5;
+        Extract = 6;
+        Upload = 7;
+    };
+    required CC_MsgType callingType=1;
+    optional bytes restParam=2;
+}
+
