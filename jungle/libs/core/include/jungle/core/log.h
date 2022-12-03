@@ -5,9 +5,14 @@
 #include <jungle/version.h>
 #include <string>
 
-#if defined(RELATIVE_LOG_PATH) && defined(_HAS_CXX17)
+#if defined(RELATIVE_LOG_PATH)
+#if __cplusplus >= 201703L
 #include <filesystem>
 namespace fs = std::filesystem;
+#else
+#warning "Set RELATIVE_LOG_PATH but not with c++17"
+#undef RELATIVE_LOG_PATH
+#endif
 #endif
 
 inline std::ostream *&default_out() {

@@ -25,6 +25,8 @@ int main()
 	std::variant<int,string,D> d;
 	d=1;
 	d={};
+	auto p= string("");
+	p=p+(char *)0;
 	cout << endl;
 	return 0;
 }

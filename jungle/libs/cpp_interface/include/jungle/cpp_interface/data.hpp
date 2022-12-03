@@ -50,6 +50,7 @@ struct DataItem : public _DataItem_Variant {
       return true;
     }
     LOG("");
+    return false;
   }
   // initializer
   DataItem(Int d) : variant(d), type(Data_Type::Integer) {}
@@ -62,7 +63,7 @@ struct DataItem : public _DataItem_Variant {
     DelayConstruct(std::forward<Args>(args)...);
   }
 
-  DataItem InvalidInstance() { return DataItem{InvalidType{}}; }
+  static DataItem InvalidInstance() { return DataItem{InvalidType{}}; }
 
   template <typename... Args> void DelayConstruct(Args... args) {
     if constexpr (std::is_constructible<std::string, Args...>::value) {
@@ -98,7 +99,7 @@ struct Table : public std::map<DataItem, DataItem> {
 // map<>,cause if we  just use Table's constructor in place, it will be told
 // Table is incomplete type
 template <>
-std::shared_ptr<Table> Construct_Table<const std::map<DataItem, DataItem> &>(
+inline std::shared_ptr<Table> Construct_Table<const std::map<DataItem, DataItem> &>(
     std::map<DataItem, DataItem> const &m) {
   return std::make_shared<Table>(m);
 };
