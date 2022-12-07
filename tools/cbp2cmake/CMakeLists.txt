@@ -23,6 +23,7 @@ target_sources(cbp2cmake PUBLIC ${HEADERS} PRIVATE ${PROTO_FILES} ${SOURCES})
 
 add_compile_options(-s)
 add_compile_definitions(RELATIVE_LOG_PATH)
+set_property(TARGET cbp2cmake PROPERTY CXX_STANDARD 20) # is_describe
 ##################  LINKS
 
 find_package(Protobuf REQUIRED HINTS ${CMAKE_SOURCE_DIR}/extern/protobuf NO_DEFAULT_PATH)

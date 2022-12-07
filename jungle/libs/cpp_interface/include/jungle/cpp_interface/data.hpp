@@ -71,7 +71,7 @@ struct DataItem : public _DataItem_Variant {
     } else if constexpr (std::is_constructible<Table, Args...>::value) {
       new (this) DataItem(std::make_shared<Table>(std::forward<Args>(args)...));
     } else
-      static_assert(std::is_same_v<std::tuple<Args...>, std::tuple<Args...>>,
+      static_assert(!std::is_same_v<std::tuple<Args...>, std::tuple<Args...>>,
                     "there is no suitable constructor");
   }
 
