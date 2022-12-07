@@ -96,39 +96,40 @@ DataTo (T &origin_t)
       WT ret (std::make_shared<Table> ());
       Table &table = *std::get<std::shared_ptr<Table> > (ret).get ();
       using D1 = boost::describe::describe_members<T, boost::describe::mod_public | boost::describe::mod_protected>;
-      boost::mp11::mp_for_each<D1> ([&](auto D){
-      using DT = std::decay_t<decltype ((std::decay_t<T> *)0->*D.pointer)>;
-      if constexpr (std::is_integral_v<DT> || std::is_enum_v<DT>)
-        {
-          table.insert (std::make_pair<WT, WT> (D.name, int (t.*D.pointer)));
-        }
-      else if constexpr (std::is_floating_point_v<DT>)
-        {
-          table.insert (std::make_pair<WT, WT> (D.name, float (t.*D.pointer)));
-        }
-      else if constexpr (std::is_same<std::string, DT>::value)
-        {
-          table.insert (std::make_pair<WT, WT> (D.name, std::string (t.*D.pointer)));
-        }
-      else if constexpr (ComesFrom<std::map, DT>::value)
-        {
-          auto childTable = WT (std::make_shared<Table> ());
-          auto key = WT (D.name);
-          DataTo (t.*D.pointer);
-        }
-      else if constexpr (ComesFrom<std::vector, DT>::value)
-        { // vector and map both store in table
-          auto childTable = std::make_shared<Table> ();
-          auto key = WT (D.name);
-          auto &vec = t.*D.pointer;
-          for (int i = 0; i < int (vec.size ()); ++i)
-            childTable->insert (std::make_pair<WT, WT> (i, DataTo (vec[i])));
-          table.insert (std::make_pair<WT, WT> (D.name, childTable));
-        }
-      else
-        {
-          static_assert (!std::is_same_v<DT, DT>, "not supported base type");
-        }
+      boost::mp11::mp_for_each<D1> ([&] (auto D) {
+        using DT = std::decay_t<decltype ((std::decay_t<T> *)0->*D.pointer)>;
+        if constexpr (std::is_integral_v<DT> || std::is_enum_v<DT>)
+          {
+            table.insert (std::make_pair<WT, WT> (D.name, int (t.*D.pointer)));
+          }
+        else if constexpr (std::is_floating_point_v<DT>)
+          {
+            table.insert (std::make_pair<WT, WT> (D.name, float (t.*D.pointer)));
+          }
+        else if constexpr (std::is_same<std::string, DT>::value)
+          {
+            table.insert (std::make_pair<WT, WT> (D.name, std::string (t.*D.pointer)));
+          }
+        else if constexpr (ComesFrom<std::map, DT>::value)
+          {
+            auto childTable = WT (std::make_shared<Table> ());
+            auto key = WT (D.name);
+            DataTo (t.*D.pointer);
+          }
+        else if constexpr (ComesFrom<std::vector, DT>::value)
+          { // vector and map both store in table
+            auto childTable = std::make_shared<Table> ();
+            auto key = WT (D.name);
+            auto &vec = t.*D.pointer;
+            for (int i = 0; i < int (vec.size ()); ++i)
+              childTable->insert (std::make_pair<WT, WT> (i, DataTo (vec[i])));
+            childTable->insert (std::make_pair<WT, WT> ("size", cpp_interface::Data::Int (vec.size ())));
+            table.insert (std::make_pair<WT, WT> (D.name, childTable));
+          }
+        else
+          {
+            static_assert (!std::is_same_v<DT, DT>, "not supported base type");
+          }
       });
       // _External<T> e{ origin_t, table };
       // boost::mp11::mp_for_each<D1> (e);
@@ -136,13 +137,94 @@ DataTo (T &origin_t)
     }
   else // base type
     {
-      if constexpr (std::is_same_v<int, T> || std::is_same_v<float, T> || std::is_same_v<std::string, T>) // base type
+      if constexpr (std::is_integral_v<T> || std::is_enum_v<T> || std::is_same_v<float, T>
+                    || std::is_same_v<std::string, T>) // base type
         return WT (t);
       else
-        static_assert (std::is_same_v<T, T>, "not supported base type");
+        static_assert (!std::is_same_v<T, T>, "not supported base type");
     }
   return WT (); // this just to erase warning
 }
+
+template <typename T>
+inline std::decay_t<T>
+DataFrom (WT &wt)
+{
+  using retT = std::decay_t<T>;
+  retT ret;
+  if constexpr (is_described<retT>) // described class
+    {
+      auto shared_table = wt.safe_access<std::shared_ptr<cpp_interface::Data::Table> > ();
+      if (shared_table == nullptr)
+        {
+          LOG (fmt::format ("DataFrom<{}> access table failed", typeid (retT).name ()));
+          return ret;
+        }
+      auto &table = *shared_table.get ();
+      using D1 = boost::describe::describe_members<T, boost::describe::mod_public | boost::describe::mod_protected>;
+      boost::mp11::mp_for_each<D1> ([&] (auto D)->void {
+        using DT = std::decay_t<decltype ((std::decay_t<T> *)0->*D.pointer)>;
+        auto &val = table[WT (D.name)];
+        if constexpr (std::is_integral_v<DT> || std::is_enum_v<DT>)
+          {
+            ret.*D.pointer = DT(val.safe_access<cpp_interface::Data::Int> ());
+          }
+        else if constexpr (std::is_floating_point_v<DT>)
+          {
+            ret.*D.pointer = val.safe_access<cpp_interface::Data::Float> ();
+          }
+        else if constexpr (std::is_same<std::string, DT>::value)
+          {
+            ret.*D.pointer = val.safe_access<cpp_interface::Data::String> ();
+          }
+        else if constexpr (ComesFrom<std::map, DT>::value)
+          {
+            auto childTable = WT (std::make_shared<Table> ());
+            auto key = WT (D.name);
+            DataTo (ret.*D.pointer);
+          }
+        else if constexpr (ComesFrom<std::vector, DT>::value)
+          {
+            using VecValueType = DT::value_type;
+            auto shared_childTable = val.safe_access<std::shared_ptr<cpp_interface::Data::Table> > ();
+            if (shared_childTable == nullptr)
+              {
+                LOG ("childTable is null");
+                return ;
+              }
+            auto &childTable = *shared_childTable.get ();
+
+            auto &vec = ret.*D.pointer;
+            int size = childTable[WT ("size")].safe_access<cpp_interface::Data::Int>();
+            vec.resize (size);
+            WT tempIndex = WT (0);
+            for (int i = 0; i < size; ++i)
+              {
+                tempIndex = i;
+                if (auto p = childTable.find (tempIndex); p != childTable.end ())
+                  vec[i] = DataFrom<VecValueType> (p->second);
+              }
+          }
+        else
+          {
+            static_assert (!std::is_same_v<DT, DT>, "not supported base type");
+          }
+      });
+    }
+  else
+    {
+      if constexpr (std::is_integral_v<retT> || std::is_enum_v<retT>)
+        ret = retT (wt.safe_access<cpp_interface::Data::Int> ());
+      else if constexpr (std::is_floating_point_v<retT>)
+        ret = retT (wt.safe_access<cpp_interface::Data::Float> ());
+      else if constexpr (std::is_same_v<std::string, retT>)
+        ret = wt.safe_access<std::string> ();
+      else
+        static_assert (!std::is_same_v<retT, retT>, "not supported base type");
+    }
+    return ret;
+}
 } // namespace Detail
 using Detail::DataTo;
+using Detail::DataFrom;
 } // namespace CTC
