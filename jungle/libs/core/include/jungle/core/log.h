@@ -22,7 +22,7 @@ inline std::ostream *&default_out() {
 inline auto log(std::string const &s, std::ostream *out = default_out()) {
   (*out) << s << std::endl;
 }
-
+using fmt::format;
 #ifdef RELATIVE_LOG_PATH
 #define LOG(msg)                                                               \
   log(fmt::format("-- {}; {}:{}", msg,                                              \
