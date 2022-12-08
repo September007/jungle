@@ -34,18 +34,13 @@ main ()
   CTC::CTC_Task tsk;
   static_assert (CTC::Detail::ComesFrom<std::vector, std::vector<int> >::value, "");
   static_assert (!CTC::Detail::ComesFrom<std::map, std::vector<int> >::value, "");
-  boost_public_member_descriptor_fn ((CTC::CTC_Task **)0);
+  
 
   raw.conf = "conf";
   raw.type = raw.json;
-  raw.vi = { 1, 2, 3 };
   auto p = CTC::DataTo (raw);
 
   auto praw=CTC::DataFrom<CTC::CTC_Task_Raw>(p);
   cpp_interface::Data::Table t;
-  CTC::Detail::_External<CTC::CTC_Task_Raw> e{raw,t};
-  using members=boost::describe::describe_members<CoutTestType, boost::describe::mod_public | boost::describe::mod_protected>;
-  //e()
-
   return 0;
 }

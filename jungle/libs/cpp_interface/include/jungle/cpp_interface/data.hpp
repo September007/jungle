@@ -30,6 +30,11 @@ using InvalidType = struct InvalidType
   {
     return true;
   }
+  constexpr bool
+  operator== (InvalidType const &) const
+  {
+    return true;
+  }
 };
 
 /*  Table is incomplete, but DataItem need its comparator */
@@ -63,6 +68,7 @@ struct DataItem : public _DataItem_Variant
     LOG ("");
     return false;
   }
+  bool operator== (const DataItem &) const = default;
   // initializer
   DataItem (Int d) : variant (d), type (Data_Type::Integer) {}
   DataItem (Float d) : variant (d), type (Data_Type::Floating) {}
@@ -94,21 +100,26 @@ struct DataItem : public _DataItem_Variant
         using TheOneArg = typename FirstArg<Args...>::type;
         if constexpr (std::is_integral_v<std::decay_t<TheOneArg> > || std::is_enum_v<TheOneArg>)
           new (this) DataItem (Int (args...));
-        else if constexpr (std::is_floating_point_v<TheOneArg> )
+        else if constexpr (std::is_floating_point_v<TheOneArg>)
           new (this) DataItem (Float (args...));
         else
           static_assert (!std::is_same_v<std::tuple<Args...>, std::tuple<Args...> >,
                          "there is no suitable constructor");
       }
   }
-  template<typename T>
-  T safe_access(){
-    try{
-      return std::get<T>(*this);
-    }catch( std::bad_variant_access &e){
-      LOG(fmt::format("cpp_interface::Data::DateItem bad access: {}",e.what()));
-      return T();
-    }
+  template <typename T>
+  T
+  safe_access ()
+  {
+    try
+      {
+        return std::get<T> (*this);
+      }
+    catch (std::bad_variant_access &e)
+      {
+        LOG (fmt::format ("cpp_interface::Data::DateItem bad access: {}", e.what ()));
+        return T ();
+      }
   }
 
   Data_Type type = Data_Type::Invalid;
