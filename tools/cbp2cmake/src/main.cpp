@@ -42,5 +42,9 @@ main ()
 
   auto praw=CTC::DataFrom<CTC::CTC_Task_Raw>(p);
   cpp_interface::Data::Table t;
+  constexpr int x[]= {
+    boost::describe::has_describe_bases<CTC::CTC_Task_Raw>::value,
+    boost::describe::has_describe_members<CTC::CTC_Task_Raw>::value,
+    boost::describe::has_describe_enumerators<CTC::CTC_Task_Raw>::value};
   return 0;
 }

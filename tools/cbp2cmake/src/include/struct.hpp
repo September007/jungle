@@ -10,9 +10,10 @@ using std::vector;
 namespace CTC
 {
 /* a node could be a target or a set of target(maybe zero target) */
-BOOST_DEFINE_ENUM_CLASS (Node_Type, Target, Set)
-/* target type */
+BOOST_DEFINE_ENUM_CLASS (Node_Type, Target, Set);
 BOOST_DEFINE_ENUM_CLASS (Target_Type, Unknown, Exe, Static, Dynamic, Object, Interface);
+BOOST_DEFINE_ENUM_CLASS(Status_t,SUCCESS,FAILED);
+BOOST_DEFINE_ENUM_CLASS(Connect_Type,Contains);
 
 struct Node
 {

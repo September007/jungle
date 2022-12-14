@@ -42,6 +42,7 @@ struct Table;
 extern "C" bool Table_Less (std::shared_ptr<Table> l, std::shared_ptr<Table> r);
 template <typename... Args> inline std::shared_ptr<Table> Construct_Table (Args... ags);
 
+using TablePtr=std::shared_ptr<Table>;
 using _DataItem_Variant = std::variant<InvalidType, Int, Float, std::string, std::shared_ptr<Table> >;
 struct DataItem : public _DataItem_Variant
 {
@@ -109,7 +110,7 @@ struct DataItem : public _DataItem_Variant
   }
   template <typename T>
   T
-  safe_access ()
+  safe_access ()const
   {
     try
       {

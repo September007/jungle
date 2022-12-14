@@ -15,29 +15,45 @@ namespace PackContent
 {
 
 using std::false_type;
-
-template <DisPatcher_Msg msg> struct PackContent : false_type
+using std::string;
+using CTC::Status_t;
+template <DisPatcher_Msg msg> struct PackContent
 {
 };
 template <> struct PackContent<DisPatcher_Msg::Add_Node>
 {
   struct ContentImpl
   {
-    std::string name;
+    string name;
     Node_Type type;
-    std::string content;
+    string content;
   };
   using Content = ContentImpl;
+  using Return = Status_t;
   BOOST_DESCRIBE_STRUCT (ContentImpl, (), (name, type, content));
 };
 template <> struct PackContent<DisPatcher_Msg::AnaLyze>
 {
   struct ContentImpl
   {
-    std::string node_name;
+    string node_name;
   };
   using Content = ContentImpl;
+  using Return = CTC::Cbp::Project;
+
   //BOOST_DESCRIBE_STRUCT (ContentImpl, (), (name, type, content));
 };
-}
-}
+
+template<> struct PackContent<DisPatcher_Msg::Connect>
+{
+  struct ContentImpl{
+    string node_name;
+    string parent_node_name;
+    Connect_Type connect_type;
+  };
+  using Content = ContentImpl;
+  using Return = Status_t;
+};
+
+} // namespace PackContent
+}// namespace CTC
