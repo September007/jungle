@@ -69,7 +69,7 @@ struct DataItem : public _DataItem_Variant
     LOG ("");
     return false;
   }
-  bool operator== (const DataItem &) const = default;
+  bool operator== (const DataItem &r) const { return type==r.type&&*(_DataItem_Variant*)this==*(_DataItem_Variant*)&r;}
   // initializer
   DataItem (Int d) : variant (d), type (Data_Type::Integer) {}
   DataItem (Float d) : variant (d), type (Data_Type::Floating) {}

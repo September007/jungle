@@ -3,29 +3,48 @@
 using namespace std;
 
 BOOST_DEFINE_ENUM(Gender,Male,Female);
-struct 教导主任{
+
+/* 麻蛋，教导主任 标识符在GCC7表现不对劲 */
+struct JDZR{
     vector/*年级*/<set/*班*/<map/*某班学生姓名*/<string,Gender>>> nnnest;//  
     string name;
     float height;
     double dheight;
     int numOfHands;
-    friend bool operator==(const 教导主任&l,const 教导主任&r){
+    friend bool operator==(const JDZR&l,const JDZR&r){
         return l.nnnest==r.nnnest &&l.name==r.name&&l.height==r.height&&l.dheight==r.dheight&&l.numOfHands==r.numOfHands;
     }
 };
-BOOST_DESCRIBE_STRUCT(教导主任,(),(nnnest,name,height,dheight,numOfHands));
+BOOST_DESCRIBE_STRUCT(JDZR,(),(nnnest,name,height,dheight,numOfHands));
 
+struct privateThings{
+    double length=-1;
+    bool operator==(privateThings const & r){return length==r.length;}
+};
+BOOST_DESCRIBE_STRUCT(privateThings,(),(length));
 
+struct SJDZR:public JDZR,private privateThings{
+    int id=-1;
+    SJDZR(JDZR a={},privateThings b={},int c=0):JDZR(a),privateThings(b),id(c){};
+    friend bool operator ==(const SJDZR&l,const SJDZR &r){
+        return(*(JDZR*)&l)==(*(JDZR*)&r)&&(*(privateThings*)&l)==(*(privateThings*)&r)&&l.id==r.id;
+    }
+};
+BOOST_DESCRIBE_STRUCT(SJDZR,(JDZR,privateThings),(id));
 TEST(cbp2cmake,data_convert){
+    
     using namespace CTC;
     using namespace cpp_interface::Data;
-    教导主任 mas={
+
+    JDZR mas={
         {},
         "mas0",
         175,
         175,
         2
     };
+    constexpr bool is=CTC::Detail::is_described<JDZR>;
+    static_assert(is,"");
     set<map<string,Gender>> C1,C2;
     C1.insert(map<string,Gender>{{"C100",Male},{"C101",Female}});
     C1.insert(map<string,Gender>{{"C110",Female},{"C111",Female}});
@@ -56,10 +75,18 @@ TEST(cbp2cmake,data_convert){
         j++;
         ++it;
     }
-    auto from=CTC::DataFrom<教导主任>(to);
+    auto from=CTC::DataFrom<JDZR>(to);
     EXPECT_EQ(i,4);   
     EXPECT_EQ(j,4);
     EXPECT_EQ(mas,from);
+
+    using T=SJDZR;
+    using Bases=boost::describe::describe_bases<T,boost::describe::mod_public| boost::describe::mod_protected| boost::describe::mod_private>;
+    constexpr int index0=boost::mp11::mp_find<Bases,JDZR>::type::value;
+    SJDZR smas{mas,{18},0};
+    auto sto=CTC::DataTo(smas);
+    auto sfrom=CTC::DataFrom<SJDZR>(sto);
+    EXPECT_EQ(smas,sfrom);
 }
 
 

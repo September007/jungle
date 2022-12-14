@@ -7,8 +7,8 @@
 
 #if defined(RELATIVE_LOG_PATH)
 #if __cplusplus >= 201703L
-#include <filesystem>
-namespace fs = std::filesystem;
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 #else
 #warning "Set RELATIVE_LOG_PATH but not with c++17"
 #undef RELATIVE_LOG_PATH
