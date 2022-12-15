@@ -26,14 +26,19 @@ template <typename T, typename... rest> struct FirstArg
 using InvalidType = struct InvalidType
 {
   constexpr bool
-  operator<(InvalidType const &)
+  operator<(InvalidType const &)const
   {
     return true;
   }
   constexpr bool
-  operator== (InvalidType const &) const
+  operator == (InvalidType const &) const
   {
     return true;
+  }
+  constexpr bool
+  operator != (InvalidType const &r) const
+  {
+    return !this->operator==(r);
   }
 };
 

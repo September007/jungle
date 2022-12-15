@@ -20,7 +20,10 @@ struct Node
   std::string name;
   Node_Type type;
   std::string content;
+  std::string location;
 };
+BOOST_DESCRIBE_STRUCT(Node,(),(name,type,content,location));
+
 namespace Cbp
 {
 struct Compiler_Option
