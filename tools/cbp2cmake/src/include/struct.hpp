@@ -12,7 +12,7 @@ namespace CTC
 /* a node could be a target or a set of target(maybe zero target) */
 BOOST_DEFINE_ENUM_CLASS (Node_Type, Target, Set);
 BOOST_DEFINE_ENUM_CLASS (Target_Type, Unknown, Exe, Static, Dynamic, Object, Interface);
-BOOST_DEFINE_ENUM_CLASS(Status_t,SUCCESS,FAILED);
+BOOST_DEFINE_ENUM_CLASS(Status_t,SUCCESS,FAILED,UnHandled);
 BOOST_DEFINE_ENUM_CLASS(Connect_Type,Contains);
 
 struct Node
@@ -21,8 +21,10 @@ struct Node
   Node_Type type;
   std::string content;
   std::string location;
+  auto operator<=>(const Node&r)const=default;
 };
-BOOST_DESCRIBE_STRUCT(Node,(),(name,type,content,location));
+BOOST_DESCRIBE_STRUCT(Node,(),(name,type,content,location)); 
+
 
 namespace Cbp
 {
@@ -159,7 +161,7 @@ struct project
 
   // cmake source path
   string cmake_source_path;
-  string required_cmake_version = "3.20";
+  string required_cmake_version = "3.10";
   // generate project(***), if this is null,will take cmake_source_path.filename
   string cmake_project_name;
   // trace version
@@ -168,6 +170,7 @@ struct project
 };
 
 // clang-format off
+BOOST_DESCRIBE_STRUCT (Context, (), (cmake_top_level_dir, cmake_current_dir));
 BOOST_DESCRIBE_STRUCT (project, (), (directory_property, targets, child_dirs,cmake_source_path,required_cmake_version,cmake_project_name,project_version,project_description));
 //BOOST_DESCRIBE_STRUCT (, (), ());
 // clang-format on

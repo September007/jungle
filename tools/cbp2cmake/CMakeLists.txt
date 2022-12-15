@@ -17,7 +17,7 @@ target_sources(${libname} PUBLIC ${HEADERS} PRIVATE ${PROTO_FILES} ${SOURCES})
 # #################  COMPILE
 add_compile_options(-s)
 add_compile_definitions(RELATIVE_LOG_PATH)
-set_property(TARGET ${libname} PROPERTY CXX_STANDARD 17) # is_describe
+set_property(TARGET ${libname} PROPERTY CXX_STANDARD 20) # is_describe
 
 # #################  LINKS
 target_link_libraries(${libname} PUBLIC boost_describe boost_json jungle::cpp_interface)

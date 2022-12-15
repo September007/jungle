@@ -7,6 +7,7 @@ note： boost_defined type only support simple type like
     and composite type with member just like before
     not support reference type
 */
+#pragma once
 #include <boost/describe.hpp>
 #include <jungle/cpp_interface.hpp>
 #include <set>
@@ -31,13 +32,14 @@ template <typename T>
 constexpr bool is_described_impl = /* boost::describe::has_describe_enumerators<T>::value|| */
     boost::describe::has_describe_bases<T>::value || boost::describe::has_describe_members<T>::value;
 #else
-template <typename T> concept is_described_impl = requires (std::decay_t<T> * t)
-{
-  boost_public_member_descriptor_fn (&t);
-}
-|| requires (std::decay_t<T> *t) { boost_base_descriptor_fn (&t); };
+// clang-format off
+template <typename T> concept is_described_impl = 
+  requires (std::decay_t<T> *t) { boost_public_member_descriptor_fn (&t);} ||
+  requires (std::decay_t<T> *t) { boost_base_descriptor_fn (&t); };
+// clang-format on
 #endif
 template <typename T> constexpr bool is_described = is_described_impl<T>;
+
 template <typename OT>
 inline WT
 DataTo (OT const &origin_t)
@@ -46,46 +48,26 @@ DataTo (OT const &origin_t)
   auto &t = *(std::decay_t<T> *)&origin_t;
   if constexpr (is_described<T>) // described class
     {
-      WT ret (std::make_shared<Table> ());
-      Table &table = *std::get<std::shared_ptr<Table> > (ret).get ();
       using Members = boost::describe::describe_members<T, boost::describe::mod_any_access>;
       using Bases = boost::describe::describe_bases<T, boost::describe::mod_any_access>;
+      WT ret (std::make_shared<Table> ());
+      Table &table = *std::get<std::shared_ptr<Table> > (ret).get ();
+
       boost::mp11::mp_for_each<Bases> ([&] (auto D) {
         constexpr int base_index = boost::mp11::mp_find<Bases, decltype (D)>::type::value;
         table.emplace (base_index, DataTo (*(std::add_pointer_t<std::decay_t<typename decltype (D)::type> >)(&t)));
       });
       boost::mp11::mp_for_each<Members> ([&] (auto D) {
         using DT = std::decay_t<decltype ((std::decay_t<T> *)0->*D.pointer)>;
-        if constexpr (std::is_integral_v<DT> || std::is_enum_v<DT>)
-          {
-            table.emplace (std::make_pair<WT, WT> (D.name, int (t.*D.pointer)));
-          }
-        else if constexpr (std::is_floating_point_v<DT>)
-          {
-            table.emplace (std::make_pair<WT, WT> (D.name, float (t.*D.pointer)));
-          }
-        else if constexpr (std::is_same<std::string, DT>::value)
-          {
-            table.emplace (std::make_pair<WT, WT> (D.name, std::string (t.*D.pointer)));
-          }
-        else if constexpr (ComesFrom<std::map, DT>::value)
-          table.emplace (WT (D.name), DataTo (t.*D.pointer));
-        else if constexpr (ComesFrom<std::set, DT>::value)
-          table.emplace (WT (D.name), DataTo (t.*D.pointer));
-        else if constexpr (ComesFrom<std::vector, DT>::value)
-          table.insert (std::make_pair<WT, WT> (D.name, DataTo (t.*D.pointer)));
-        else
-          {
-            static_assert (!std::is_same_v<DT, DT>, "not supported base type");
-          }
+        table.emplace (D.name, DataTo (t.*D.pointer));
       });
       return ret;
     }
   else // base type
     {
       using NakedT = std::decay_t<T>;
-      if constexpr (std::is_integral_v<NakedT> || std::is_enum_v<NakedT> || std::is_same_v<float, NakedT>
-                    || std::is_same_v<std::string, NakedT>) // base type
+      if constexpr (std::is_integral_v<NakedT> || std::is_enum_v<NakedT> || std::is_floating_point_v<NakedT>
+                    || std::is_same_v<float, NakedT> || std::is_same_v<std::string, NakedT>) // base type
         return WT (t);
       else if constexpr (ComesFrom<std::map, NakedT>::value)
         {
@@ -150,28 +132,7 @@ DataFrom (const WT &wt)
       boost::mp11::mp_for_each<Members> ([&] (auto D) -> void {
         using DT = std::decay_t<decltype ((std::decay_t<T> *)0->*D.pointer)>;
         auto &val = table[WT (D.name)];
-        if constexpr (std::is_integral_v<DT> || std::is_enum_v<DT>)
-          {
-            ret.*D.pointer = DT (val.safe_access<cpp_interface::Data::Int> ());
-          }
-        else if constexpr (std::is_floating_point_v<DT>)
-          {
-            ret.*D.pointer = val.safe_access<cpp_interface::Data::Float> ();
-          }
-        else if constexpr (std::is_same<std::string, DT>::value)
-          {
-            ret.*D.pointer = val.safe_access<cpp_interface::Data::String> ();
-          }
-        else if constexpr (ComesFrom<std::map, DT>::value || ComesFrom<std::set, DT>::value
-                           || ComesFrom<std::vector, DT>::value)
-          {
-            ret.*D.pointer = DataFrom<DT> (val);
-            // DataFrom<DT>(val.safe_access<std::shared_ptr<Table> >().get()->operator[](WT(D.name)));
-          }
-        else
-          {
-            static_assert (!std::is_same_v<DT, DT>, "not supported base type");
-          }
+        ret.*D.pointer = DataFrom<DT> (val);
       });
     }
   else
@@ -228,6 +189,28 @@ DataFrom (const WT &wt)
     }
   return ret;
 }
+
+
+
+
+// template<typename T>using _Data_To=decltype(DataTo<T>);
+// template<typename T,typename En=void>struct is_DataTo:std::false_type{};
+// template<typename T >struct is_DataTo<T,_Data_To<T>>:std::true_type{};
+
+
+// template <typename T, typename _ = void> constexpr bool is_DataTo_able = false;
+// template <typename T, typename _ = void> constexpr bool is_DataFrom_able = false;
+// template <typename T> constexpr bool is_DataTo_able < T, decltype (DataTo (*(T*)0))> = true;
+// template <typename T> constexpr bool is_DataFrom_able < T, decltype (DataFrom<T> (WT ()))> = true;
+// template <typename T> constexpr bool is_Data_Supported = is_DataTo_able<T> && is_DataFrom_able<T>;
+
+template <typename T>
+constexpr bool is_Data_Supported_impl
+    = std::is_integral_v<T> || std::is_floating_point_v<T> || std::is_enum_v<T> || std::is_same_v<T, std::string> || is_described<T>
+      || ComesFrom<std::map,  T>::value || ComesFrom<std::set, T>::value || ComesFrom<std::vector,  T>::value;
+
+template<typename T>
+constexpr bool is_Data_Supported=is_Data_Supported_impl<std::decay_t<T>>;
 } // namespace Detail
 using Detail::DataFrom;
 using Detail::DataTo;

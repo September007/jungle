@@ -1,5 +1,6 @@
 #include <ctc.hpp>
 #include <msg.hpp>
+#include <msg_handler.hpp>
 using namespace CTC;
 
 std::shared_ptr<CTC_Task>
@@ -18,20 +19,18 @@ CTC_Task::Run ()
       LOG (format ("agent [{}] init failed,returning", agent->name));
       return CTC_Running_State::AGENT_INIT_FAILED;
     }
-  auto DeliverMsg = [&] (DisPatcher_Msg msg, PackType pack) -> PackType {
+  auto DeliverMsg = [&] (DisPatcher_Msg msg, PackType & pack) -> bool {
     auto ret = agent->Dispatcher (msg, pack);
-    if (ret == PackType::InvalidInstance ())
+    if (ret == Status_t::UnHandled)
       {
         LOG (format ("agent not handled DisPatcher_Msg [{}]", int (msg))); // todo: try describe
-        auto p = defaultDispathcerMsgHandler.find (msg);
-        if (p != defaultDispathcerMsgHandler.end ())
-          ret = p->second (pack);
-        if (ret != PackType::InvalidInstance ())
+        ret = defaultDispathcerMsgHandler(msg,pack);
+        if (ret != Status_t::UnHandled)
           LOG (format ("defaultHandler cannot handle DisPatcher_Msg [{}]", int (msg)));
         else
           LOG (format ("defaultHandler also cannot handle DisPatcher_Msg [{}]", int (msg)));
       }
-    return ret;
+    return ret == Status_t::SUCCESS;
   };
   return CTC_Running_State::SUCCESS;
 }

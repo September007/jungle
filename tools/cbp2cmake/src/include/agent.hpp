@@ -11,7 +11,7 @@ struct Agent{
     /* return 0 if success */
     virtual int Init()=0;
     /* return InvalidInstance if not successfully handled */
-    virtual PackType Dispatcher(DisPatcher_Msg,PackType)=0;
+    virtual Status_t Dispatcher(DisPatcher_Msg,PackType)=0;
     std::string name;
 };
 
