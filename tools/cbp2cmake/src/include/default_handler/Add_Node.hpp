@@ -1,6 +1,7 @@
 #include "handler_base.hpp"
 #include "util.hpp"
 #include <io.hpp>
+#include <ctc.hpp>
 namespace CTC
 {
 template <>
@@ -19,7 +20,7 @@ DHandler<DisPatcher_Msg::Add_Node> (WT &in_, WT &out_)
   in.node.type = decltype (in.node.type)::Target;
 
   // find a proper name
-  auto name = in.node.name;
+  auto name = fs::path(in.node.name).filename().generic_string();
   auto &nodes = task->cache.nodes;
   if (nodes.find (name) != nodes.end ())
     {
@@ -35,7 +36,7 @@ DHandler<DisPatcher_Msg::Add_Node> (WT &in_, WT &out_)
         }
     }
   in.node.name = name;
-  
+
   out.status = Status_t::SUCCESS;
 
   in_ = CTC::DataTo (in);

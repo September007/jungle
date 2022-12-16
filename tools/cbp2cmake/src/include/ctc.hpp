@@ -42,8 +42,7 @@ struct CTC_Task
   static std::shared_ptr<CTC_Task>
   CreateTask ()
   {
-    static std::mutex _m;
-    std::lock_guard __ (_m);
+    std::lock_guard __ (inline_static_mutex ());
     auto ret = std::shared_ptr<CTC_Task> (new CTC_Task);
     ret->CTC_ID = _id_to_task.size () + 1;
     return _id_to_task[ret->CTC_ID] = ret;
@@ -51,7 +50,14 @@ struct CTC_Task
   static std::shared_ptr<CTC_Task>
   AccessTask (int ctc_id)
   {
+    std::lock_guard __ (inline_static_mutex ());
     return _id_to_task[ctc_id];
+  }
+  inline static std::mutex &
+  inline_static_mutex ()
+  {
+    static std::mutex m;
+    return m;
   }
 
 private:

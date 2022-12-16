@@ -45,7 +45,7 @@ template <> struct PackContent<DisPatcher_Msg::Add_Node>
     Status_t status;
   };
 };
-BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Add_Node>::Content, (), (node));
+BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Add_Node>::Content, (ContentBase), (node));
 BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Add_Node>::Return, (), (status));
 
 template <> struct PackContent<DisPatcher_Msg::Analyze>
@@ -62,7 +62,7 @@ template <> struct PackContent<DisPatcher_Msg::Analyze>
   };
 
 };
-  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Analyze>::Content, (), (node_name));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Analyze>::Content, (ContentBase), (node_name));
   BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Analyze>::Return, (), (cbp_proj));
 
 template <> struct PackContent<DisPatcher_Msg::Connect>
@@ -76,7 +76,7 @@ template <> struct PackContent<DisPatcher_Msg::Connect>
   using Content = std::vector<ContentImpl>; /* pass connect in one time */
   using Return = Status_t;
 };
-  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Connect>::ContentImpl, (), (node_name, parent_node_name, connect_type));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Connect>::ContentImpl, (ContentBase), (node_name, parent_node_name, connect_type));
 
 template <> struct PackContent<DisPatcher_Msg::Convert>
 {
@@ -102,8 +102,8 @@ template <> struct PackContent<DisPatcher_Msg::Convert>
   using Return =ReturnImpl1;
   using Content=ContentImpl1;
 };
-  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ContentImpl0, (), (connects, root_name));
-  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ContentImpl1, (), (node_name));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ContentImpl0, (ContentBase), (connects, root_name));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ContentImpl1, (ContentBase), (node_name));
   BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ReturnImpl0, (), (cmakeProjects));
   BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ReturnImpl1, (), (cmakeProject));
 
@@ -122,7 +122,7 @@ template <> struct PackContent<DisPatcher_Msg::Extract>
     PackContent<DisPatcher_Msg::Convert>::Return cmakeProjects;
   };
 };
-  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Extract>::Content, (), (connects, cmakeProjects));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Extract>::Content, (ContentBase), (connects, cmakeProjects));
   BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Extract>::Return, (), (connects, cmakeProjects));
 
 template <> struct PackContent<DisPatcher_Msg::Dump>
@@ -137,7 +137,7 @@ template <> struct PackContent<DisPatcher_Msg::Dump>
     std::vector<Node> nodes;
   };
 };
-  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Dump>::Content, (), (node_name,cmakeProject));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Dump>::Content, (ContentBase), (node_name,cmakeProject));
   BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Dump>::Return, (), (nodes));
 
 } // namespace PackContent
