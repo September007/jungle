@@ -7,7 +7,7 @@ target_include_directories(${libname} PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/src/include
 )
 file(GLOB_RECURSE HEADERS src/include/*)
-file(GLOB_RECURSE SOURCES src/*.cpp)
+file(GLOB_RECURSE SOURCES src/*.cpp src/agent/cpp/*.cpp)
 
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src/include PREFIX "头文件" FILES ${HEADERS})
 source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src PREFIX "源文件" FILES ${SOURCES})

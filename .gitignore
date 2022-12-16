@@ -4,3 +4,6 @@
 /temp
 temp
 **/version.h
+/.kdev*
+/*.kdev*
+CMakeLists.txt.user

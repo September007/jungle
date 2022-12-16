@@ -98,7 +98,7 @@ namespace cmake
         }
     };
 
-    namespace Helper
+    namespace Helper 
     {
         string PropertyToStr(string prefix, string property)
         {

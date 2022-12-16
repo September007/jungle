@@ -1,7 +1,8 @@
 #include <msg.hpp>
 #include <msg_handler.hpp>
 using namespace CTC;
-Status_t defaultDispathcerMsgHandler (DisPatcher_Msg msg,PackType &pack) {
+
+Status_t CTC::defaultDispathcerMsgHandler (DisPatcher_Msg msg,PackType &pack) {
 #define CALL(msg) \
         case DisPatcher_Msg::msg:\
         ret = DHandler<DisPatcher_Msg::msg>(pack.in,pack.out);\

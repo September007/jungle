@@ -81,19 +81,31 @@ template <> struct PackContent<DisPatcher_Msg::Connect>
 template <> struct PackContent<DisPatcher_Msg::Convert>
 {
 
-  using Content = struct : ContentBase
+  struct ContentImpl0: ContentBase
   {
     std::vector<PackContent<DisPatcher_Msg::Analyze>::Return> Analyzed_cbp_projects;
     PackContent<DisPatcher_Msg::Connect>::Content connects;
     string root_name;
   };
-  using Return =struct ReturnImpl
+  struct ReturnImpl0
   {
-    std::map<Node, Cmake::project> cmakeProjects;
+    std::map<Node, Cmake::Project> cmakeProjects;
   };
+  struct ContentImpl1 : ContentBase
+  {
+    std::string node_name;
+  };
+  struct ReturnImpl1
+  {
+    Cmake::Project cmakeProject;
+  };
+  using Return =ReturnImpl1;
+  using Content=ContentImpl1;
 };
-  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::Content, (), (connects, root_name));
-  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::Return, (), (cmakeProjects));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ContentImpl0, (), (connects, root_name));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ContentImpl1, (), (node_name));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ReturnImpl0, (), (cmakeProjects));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Convert>::ReturnImpl1, (), (cmakeProject));
 
 template <> struct PackContent<DisPatcher_Msg::Extract>
 {
@@ -117,14 +129,15 @@ template <> struct PackContent<DisPatcher_Msg::Dump>
 {
   using Content = struct : ContentBase
   {
-    Cmake::project cmakeProject;
+    std::string node_name;
+    Cmake::Project cmakeProject;
   };
   using Return = struct
   {
     std::vector<Node> nodes;
   };
 };
-  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Dump>::Content, (), (cmakeProject));
+  BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Dump>::Content, (), (node_name,cmakeProject));
   BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Dump>::Return, (), (nodes));
 
 } // namespace PackContent

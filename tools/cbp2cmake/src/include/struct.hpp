@@ -21,9 +21,10 @@ struct Node
   Node_Type type;
   std::string content;
   std::string location;
+  std::vector<string> targets;
   auto operator<=>(const Node&r)const=default;
 };
-BOOST_DESCRIBE_STRUCT(Node,(),(name,type,content,location)); 
+BOOST_DESCRIBE_STRUCT(Node,(),(name,type,content,location,targets));
 
 
 namespace Cbp
@@ -153,11 +154,11 @@ BOOST_DESCRIBE_STRUCT (Target, (CommonProperty), (OUTPUT_NAME, RUNTIME_OUTPUT_DI
 // clang-format on
 
 } // namespace PROPERTY
-struct project
+struct Project
 {
   PROPERTY::Directory directory_property;
   vector<PROPERTY::Target> targets;
-  vector<project > child_dirs;
+  vector<std::string> child_dirs; // Node.name
 
   // cmake source path
   string cmake_source_path;
@@ -171,7 +172,7 @@ struct project
 
 // clang-format off
 BOOST_DESCRIBE_STRUCT (Context, (), (cmake_top_level_dir, cmake_current_dir));
-BOOST_DESCRIBE_STRUCT (project, (), (directory_property, targets, child_dirs,cmake_source_path,required_cmake_version,cmake_project_name,project_version,project_description));
+BOOST_DESCRIBE_STRUCT (Project, (), (directory_property, targets, child_dirs,cmake_source_path,required_cmake_version,cmake_project_name,project_version,project_description));
 //BOOST_DESCRIBE_STRUCT (, (), ());
 // clang-format on
 
