@@ -7,3 +7,4 @@ temp
 /.kdev*
 /*.kdev*
 CMakeLists.txt.user
+/out

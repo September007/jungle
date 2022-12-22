@@ -20,7 +20,7 @@ int main(int argc,const char **argv)
     auto cwd=fs::current_path();
     for (int i = 1; i < argc; ++i)
     try{
-        scope_modify_Current_Path __(cwd);
+        scope_modify_Current_Path __(cwd.generic_string());
         std::string cbp_file = argv[i];
         // 转换cbp_file 到绝对路径可以避免以后的某些转换错误
         cbp_file = fs::absolute(cbp_file).string();

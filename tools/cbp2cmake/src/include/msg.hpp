@@ -51,7 +51,7 @@ BOOST_DESCRIBE_STRUCT (PackContent<DisPatcher_Msg::Add_Node>::Return, (), (statu
 template <> struct PackContent<DisPatcher_Msg::Analyze>
 {
 
-  using Content = struct : ContentBase
+  using Content = struct _Anom: ContentBase
   {
 
     string node_name;
@@ -110,7 +110,7 @@ template <> struct PackContent<DisPatcher_Msg::Convert>
 template <> struct PackContent<DisPatcher_Msg::Extract>
 {
 
-  using Content = struct : ContentBase
+  using Content = struct _Anom: ContentBase
   {
     PackContent<DisPatcher_Msg::Connect>::Content connects;
     PackContent<DisPatcher_Msg::Convert>::Return cmakeProjects;
@@ -127,7 +127,7 @@ template <> struct PackContent<DisPatcher_Msg::Extract>
 
 template <> struct PackContent<DisPatcher_Msg::Dump>
 {
-  using Content = struct : ContentBase
+  using Content = struct _Anom: ContentBase
   {
     std::string node_name;
     Cmake::Project cmakeProject;

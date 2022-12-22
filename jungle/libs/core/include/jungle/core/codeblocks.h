@@ -125,7 +125,7 @@ std::pair<bool, xml_attribute> get_attrVal_of_only_once_founded_child(xml_node &
     if (auto attr = p.attribute(required_attrname.c_str()); !attr.empty())
         return {true, attr};
     if (if_warn)
-        LOG(format("can't find attr [{}] of node \n\t content of node\n{}", required_attrname, root_node.name(), root_node.value()));
+        LOG(fmt::format("can't find attr [{}] of node \n\t content of node\n{}", required_attrname, root_node.name(), root_node.value()));
     return {false, xml_attribute{}};
 }
 string get_child_attr_val(xml_node &node, string required_child_attr, string default_val)
@@ -180,7 +180,7 @@ auto parse_Compiler_Option(pugi::xml_node node, codeblocks::Context &cx)
             auto absolute_path = fs::canonical(str, ec);
             if (ec)
             {
-                LOG(format("path [{}] not exist, cbp in [{}] ", str, cbp_path));
+                LOG(fmt::format("path [{}] not exist, cbp in [{}] ", str, cbp_path));
                 LOG(ec.message());
                 // optional behaviour
                 continue;
@@ -217,7 +217,7 @@ auto parse_Linker_Option(xml_node node, codeblocks::Context &cx)
         fs::canonical(lib, ec);
         if (ec)
         {
-            LOG(format("path [{}] not exist, cbp in [{}] ", lib, cbp_path));
+            LOG(fmt::format("path [{}] not exist, cbp in [{}] ", lib, cbp_path));
             LOG(ec.message());
             return;
         }
@@ -251,7 +251,7 @@ auto parse_Unit(xml_node &node, codeblocks::Context &cx)
         ret.file_name = fs::canonical(relative_unit_file,ec).string();
     }
     if(ec){
-        LOG(format("unit file [{}] based on [{}] is unreachable",relative_unit_file,cx.cbp_path));
+        LOG(fmt::format("unit file [{}] based on [{}] is unreachable",relative_unit_file,cx.cbp_path));
         LOG(ec.message());
     }
     for_each_child_who_have_attr(node, "target", [&](xml_node &child) {

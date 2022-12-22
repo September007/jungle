@@ -10,7 +10,11 @@
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 #else
+#if _MSVC_LANG
+#pragma message "Set RELATIVE_LOG_PATH but not with c++17"
+#else
 #warning "Set RELATIVE_LOG_PATH but not with c++17"
+#endif
 #undef RELATIVE_LOG_PATH
 #endif
 #endif

@@ -1,7 +1,0 @@
-syntax ="proto2";
-
-package CCC_1;
-
-message T{
-    required int32 ints=1;
-}

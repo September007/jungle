@@ -18,7 +18,7 @@ int main(int argc, char **argv)
             string ws=argv[i];
             // to absolute path
             ws= fs::absolute(ws).string();
-            scope_modify_Current_Path _change_path(fs::path(ws).parent_path());
+            scope_modify_Current_Path _change_path(fs::path(ws).parent_path().generic_string());
             pugi::xml_document doc;
             auto result=doc.load_file(ws.c_str());
             if(!result)continue;
@@ -27,10 +27,10 @@ int main(int argc, char **argv)
                 if(auto cbp=p.attribute("filename");!cbp.empty())
                     {
                         auto cbp_abs=fs::canonical(cbp.as_string());
-                        ps.push_back(cbp_abs);
+                        ps.push_back(cbp_abs.generic_string());
                     }
         }catch(std::exception&e){
-            SLOG(format("got error when handle {}\n{}",argv[i],e.what()),&std::cerr);
+            SLOG(fmt::format("got error when handle {}\n{}",argv[i],e.what()),&std::cerr);
         }
     }
     // set log output

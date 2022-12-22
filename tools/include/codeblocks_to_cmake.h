@@ -39,11 +39,11 @@ namespace trans
 inline cmake::PROPERTY::Target cbProj_to_cmakTarget(codeblocks::Project proj, trans::Context &cx)
 {
     cmake::PROPERTY::Target ret;
-    auto &currentCtx = cx.cbCtxs[fs::canonical(proj.cbp_source_path)];
+    auto &currentCtx = cx.cbCtxs[fs::canonical(proj.cbp_source_path).generic_string()];
     auto &targetCmakeCx = cx.cmCtx;
     if (proj.build_set.configuration_targets.size() == 0)
     {
-        LOG(format("proj:[{}] doesn't have one target configuration", proj.title));
+        LOG(fmt::format("proj:[{}] doesn't have one target configuration", proj.title));
         return ret;
     }
     codeblocks::Configuration_Target ct = proj.build_set.configuration_targets[0];
@@ -59,11 +59,11 @@ choose_out:
 
     // 2. parse cb.output_name(maybe absolute path) to cm.OUTPUT_NAME
     // and cm.RUNTIME_OUTPUT_DIRECTORY (relative path on cmCtx.cmake_current_dir!)
-    ret.OUTPUT_NAME = fs::path(ct.output_name).filename();
+    ret.OUTPUT_NAME = fs::path(ct.output_name).filename().generic_string();
     {
         scope_modify_Current_Path __(proj.cbp_source_path);
         auto abs_output_dir=fs::absolute(fs::path(ct.output_name).parent_path());
-        ret.RUNTIME_OUTPUT_DIRECTORY= fs::proximate(abs_output_dir,targetCmakeCx.cmake_current_dir);
+        ret.RUNTIME_OUTPUT_DIRECTORY= fs::proximate(abs_output_dir,targetCmakeCx.cmake_current_dir).generic_string();
     }
 
     // 3. compiling attributes: SOURCES INCLUDE_DIRECTORIES COMPILE_OPTIONS COMPILE_DEFINITIONS
@@ -75,9 +75,9 @@ choose_out:
             ret.SOURCES.insert(fs::relative(unit.file_name, targetCmakeCx.cmake_current_dir).string());
     };
     for (auto &target_include_dir : ct.compile_option.directorys)
-        ret.INCLUDE_DIRECTORIES.push_back(fs::relative(target_include_dir, targetCmakeCx.cmake_current_dir));
+        ret.INCLUDE_DIRECTORIES.push_back(fs::relative(target_include_dir, targetCmakeCx.cmake_current_dir).generic_string());
     for (auto &target_include_dir : proj.compiler_option.directorys)
-        ret.INCLUDE_DIRECTORIES.push_back(fs::relative(target_include_dir, targetCmakeCx.cmake_current_dir));
+        ret.INCLUDE_DIRECTORIES.push_back(fs::relative(target_include_dir, targetCmakeCx.cmake_current_dir).generic_string());
 
     for (auto &compile_option : ct.compile_option.options)
         // not check repeatness

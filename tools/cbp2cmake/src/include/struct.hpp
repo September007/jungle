@@ -1,9 +1,11 @@
 #pragma once
 #include <boost/describe.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/json.hpp>
 #include <boost/mp11.hpp>
 #include <set>
 #include <type_traits>
+namespace fs=boost::filesystem;
 using std::set;
 using std::string;
 using std::vector;

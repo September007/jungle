@@ -15,9 +15,18 @@ source_group(TREE ${CMAKE_CURRENT_LIST_DIR}/src PREFIX "源文件" FILES ${SOURC
 target_sources(${libname} PUBLIC ${HEADERS} PRIVATE ${PROTO_FILES} ${SOURCES})
 
 # #################  COMPILE
-add_compile_options(-s)
+message("CMAKE_CXX_COMPILER_ID:${CMAKE_CXX_COMPILER_ID}")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang") #https://www.cnblogs.com/pandamohist/p/13556546.html
+    add_compile_options(-s -Wnon-c-typedef-for-linkage)
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+    add_compile_options(
+        /wd:4819 # unicode file 
+        
+    )
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+endif()
 add_compile_definitions(RELATIVE_LOG_PATH)
-set_property(TARGET ${libname} PROPERTY CXX_STANDARD 20) # is_describe
+set_property(TARGET ${libname} PROPERTY CXX_STANDARD 20) # default compriser
 
 # #################  LINKS
 target_link_libraries(${libname} PUBLIC boost_describe boost_json jungle::cpp_interface)

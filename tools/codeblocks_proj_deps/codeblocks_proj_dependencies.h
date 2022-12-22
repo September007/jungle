@@ -81,7 +81,7 @@ DepsNode fromCBPFile(string cbp_file)
     }
     catch (std::exception &e)
     {
-        LOG(format(" catch error: {}", e.what()));
+        LOG(fmt::format(" catch error: {}", e.what()));
     }
     return ret;
 }

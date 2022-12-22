@@ -24,7 +24,7 @@ struct scope_modify_Current_Path
     std::string new_path;
     scope_modify_Current_Path(std::string new_path_) : new_path(new_path_)
     {
-        old_path = fs::current_path();
+        old_path = fs::current_path().generic_string();
         fs::current_path(new_path);
     }
     ~scope_modify_Current_Path()
@@ -125,7 +125,7 @@ std::pair<bool, xml_attribute> get_attrVal_of_only_once_founded_child(xml_node &
     if (auto attr = p.attribute(required_attrname.c_str()); !attr.empty())
         return {true, attr};
     if (if_warn)
-        LOG(format("can't find attr [{}] of node \n\t content of node\n{}", required_attrname, root_node.name(), root_node.value()));
+        LOG(fmt::format("can't find attr [{}] of node \n\t content of node\n{}", required_attrname, root_node.name(), root_node.value()));
     return {false, xml_attribute{}};
 }
 string get_child_attr_val(xml_node &node, string required_child_attr, string default_val)
@@ -180,13 +180,13 @@ auto parse_Compiler_Option(pugi::xml_node node, codeblocks::Context &cx)
             auto absolute_path = fs::canonical(str, ec);
             if (ec)
             {
-                LOG(format("path [{}] not exist, cbp in [{}] ", str, cbp_path));
+                LOG(fmt::format("path [{}] not exist, cbp in [{}] ", str, cbp_path));
                 LOG(ec.message());
                 // optional behaviour
                 continue;
             }
             if (std::find(ret.directorys.begin(), ret.directorys.end(), absolute_path) == ret.directorys.end())
-                ret.directorys.push_back(absolute_path);
+                ret.directorys.push_back(absolute_path.generic_string());
         }
     }
     return ret;
@@ -217,7 +217,7 @@ auto parse_Linker_Option(xml_node node, codeblocks::Context &cx)
         fs::canonical(lib, ec);
         if (ec)
         {
-            LOG(format("path [{}] not exist, cbp in [{}] ", lib, cbp_path));
+            LOG(fmt::format("path [{}] not exist, cbp in [{}] ", lib, cbp_path));
             LOG(ec.message());
             return;
         }
@@ -251,7 +251,7 @@ auto parse_Unit(xml_node &node, codeblocks::Context &cx)
         ret.file_name = fs::canonical(relative_unit_file,ec).string();
     }
     if(ec){
-        LOG(format("unit file [{}] based on [{}] is unreachable",relative_unit_file,cx.cbp_path));
+        LOG(fmt::format("unit file [{}] based on [{}] is unreachable",relative_unit_file,cx.cbp_path));
         LOG(ec.message());
     }
     for_each_child_who_have_attr(node, "target", [&](xml_node &child) {
@@ -311,7 +311,7 @@ inline std::tuple< codeblocks::Project,codeblocks::Context> ParseCodeBlocksProje
     auto node_proj = cbp.child("CodeBlocks_project_file").child("Project");
 
     codeblocks::Context cx;
-    cx.cbp_path = fs::canonical(cbp_file_path).parent_path();
+    cx.cbp_path = fs::canonical(cbp_file_path).parent_path().generic_string();
 
     codeblocks::Project ret = Parser::parse_Project(node_proj, cx);
     return {ret,cx};

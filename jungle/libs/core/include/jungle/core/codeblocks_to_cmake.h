@@ -43,7 +43,7 @@ inline cmake::PROPERTY::Target cbProj_to_cmakTarget(codeblocks::Project proj, tr
     auto &targetCmakeCx = cx.cmCtx;
     if (proj.build_set.configuration_targets.size() == 0)
     {
-        LOG(format("proj:[{}] doesn't have one target configuration", proj.title));
+        LOG(fmt::format("proj:[{}] doesn't have one target configuration", proj.title));
         return ret;
     }
     codeblocks::Configuration_Target ct = proj.build_set.configuration_targets[0];

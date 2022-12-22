@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 
       // to absolute path
       ws = fs::absolute(ws).string();
-      scope_modify_Current_Path _change_path(fs::path(ws).parent_path());
+      scope_modify_Current_Path _change_path(fs::path(ws).parent_path().generic_string());
       pugi::xml_document doc;
       auto result = doc.load_file(ws.c_str());
       if (!result)
@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
       for (auto p = ws_node.first_child(); p; p = p.next_sibling())
         if (auto cbp = p.attribute("filename"); !cbp.empty()) {
           auto cbp_abs = fs::canonical(cbp.as_string());
-          cbps.push_back(cbp_abs);
+          cbps.push_back(cbp_abs.generic_string());
         }
     } catch (std::exception &e) {
       std::cerr << format("got error when handle {}\n{}", ws, e.what());

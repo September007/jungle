@@ -177,7 +177,7 @@ project({}
                     part = format("add_executable({})\n", tar.get_tarName());
                     break;
                 default:
-                    LOG(format("unsupported target_type value: {} ", int(tar.target_tpye)));
+                    LOG(fmt::format("unsupported target_type value: {} ", int(tar.target_tpye)));
                     break;
                 }
                 targets_delcaration += part;
@@ -201,7 +201,7 @@ project({}
                     target_outputdir = format("set_property(TARGET {} PROPERTY RUNTIME_OUTPUT_DIRECTORY\n\t\t\t {}/{}) \n", tar.get_tarName(),"${CMAKE_CURRENT_LIST_DIR}",tar.RUNTIME_OUTPUT_DIRECTORY);
                     break;
                 default:
-                    LOG(format("unsupported target_type value: {} ", int(tar.target_tpye)));
+                    LOG(fmt::format("unsupported target_type value: {} ", int(tar.target_tpye)));
                     break;
                 }
                 string part;
@@ -217,12 +217,12 @@ project({}
                 }
                 else
                 {
-                    LOG(format("target [{}] have none source file", tar.OUTPUT_NAME));
+                    LOG(fmt::format("target [{}] have none source file", tar.OUTPUT_NAME));
                 }
                 #define add_property(property,pre) \
                 auto property##_str = PropertyToStr(format("TARGET {} PROPERTY "#property, tar.get_tarName()), tar.property,pre);\
                 if (property##_str.empty())\
-                    LOG(format("target [{}] have none "#property, tar.get_tarName()));\
+                    LOG(fmt::format("target [{}] have none "#property, tar.get_tarName()));\
                 else\
                     part += property##_str;
                 add_property(INCLUDE_DIRECTORIES,"${CMAKE_CURRENT_LIST_DIR}/");
